@@ -1,0 +1,32 @@
+ ### Create user
+POST http://localhost:9005/users
+Content-Type: application/json
+
+{
+  "email": "dani",
+  "firstname": "dan",
+  "lastname": "M"
+}
+
+### Read user
+GET http://localhost:9005/users?email=daniel
+
+### Read user
+GET http://localhost:9005/users/1
+
+### update user
+PUT http://localhost:9005/users/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "email": "daniel",
+  "firstname": "dan",
+  "lastname": "M"
+}
+
+### delete user
+DELETE http://localhost:9005/users/2
+
+
+

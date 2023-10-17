@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  title: Chatty Car Ride Sharing Service TRIPS
+  description: API for the trips service of Chatty Car, the ride sharing app.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:9002/'
+    description: dev server
+
+paths:
+
+  /passengers/trips/{id}/:
+    get:
+      summary: Get list of passengers of a trip, with pending, accepted and refused status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 38
+          description: ID of the trip
+      responses:
+        200:
+          description: Sent list of passengers
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/passengers"
+
+  /passengers/{user_id}/trips/:
+    parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 12
+        description: ID of the user
+    delete:
+      summary: Remove all tuple where i'm passenger
+      responses:
+        404:
+          description: user not found (done in gateway)
+        200:
+          description: User removed from all list where he is a passenger
+
+  /passengers/{user_id}/trips/{trip_id}:
+    parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 38
+        description: ID of the trip
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 12
+        description: ID of the user
+    post:
+      summary: Add user as passenger to a trip with pending status
+      responses:
+        400:
+          description: User is already a passenger
+        201:
+          description: User added as pending passenger
+
+    get:
+      summary: Get passenger status
+      responses:
+        404:
+          description: Trip or user not found
+        200:
+          description: Sent passenger status
+          content:
+            'text/plain':
+              schema:
+                type: string
+                enum:
+                  - pending
+                  - accepted
+                  - refused
+    put:
+      summary: Update passenger status
+      parameters:
+        - name: status
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - accepted
+              - refused
+          description: New status of the passenger
+      responses:
+        400:
+          description: User is not a passenger, status not in accepted value
+        404:
+          description: Trip or user not found
+        200:
+          description: Status is updated
+    delete:
+      summary: Remove user from passengers of a trip
+      responses:
+        400:
+          description: User is not a passenger
+        404:
+          description: Trip or user not found
+        200:
+          description: User removed from passenger
+
+  /passengers/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 12
+        description: ID of the user
+    get:
+      summary: Get list where a user is a passenger
+      responses:
+        200:
+          description: Sent all tuple where a user is a passenger
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/passengers"
+
+  /passengers/trips/{trip_id}:
+    parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 38
+        description: ID of the trip
+    delete:
+      summary: Remove all passengers from a trip
+      responses:
+        200:
+          description: all passengers are removed from the trips
+
+components:
+
+  schemas:
+
+    position:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+      example:
+        latitude: 50.849372
+        longitude: 4.451009
+
+    trip:
+      type: object
+      properties:
+        trip_id:
+          type: integer
+        origin:
+          $ref: '#/components/schemas/position'
+        destination:
+          $ref: '#/components/schemas/position'
+        departure:
+          type: string
+          description: Date in ISO 8601, YYYY-MM-DD
+        driver_id:
+          type: integer
+        available_seating:
+          type: integer
+      example:
+        trip_id: 38
+        origin:
+          latitude: 50.849372
+          longitude: 4.451009
+        destination:
+          latitude: 50.849372
+          longitude: 4.451009
+        departure: 2022-10-24 10:45:00
+        driver_id: 12
+        available_seating: 2
+
+    passenger_trips:
+      type: object
+      properties:
+        pending:
+          type: array
+          items:
+            $ref: '#/components/schemas/trip'
+        accepted:
+          type: array
+          items:
+            $ref: '#/components/schemas/trip'
+        refused:
+          type: array
+          items:
+            $ref: '#/components/schemas/trip'
+
+    passengers:
+      type: object
+      properties:
+        pending:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+        accepted:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+        refused:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+      example:
+        id: 1
+        email: gregory.seront@vinci.be
+        firstname: Gregory
+        lastname: Seront

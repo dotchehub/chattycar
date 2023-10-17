@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: Chatty Car Ride Sharing Service Notification
+  description: API for the notification service of Chatty Car, the ride sharing app.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:9001'
+    description: dev server
+
+paths:
+
+  /notifications:
+    post:
+      summary: Create a new notification
+      requestBody:
+        description: Information of the notification
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/newNotification'
+      responses:
+        400:
+          description: Notification in request is not correct
+        201:
+          description: notification is created, sent notification created with its assigned ID
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/notification'
+
+
+  /notifications/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+        description: id of the user
+    get:
+      summary: get all notifications
+      responses:
+        200:
+          description: notification of user are retrieved
+          content:
+                'application/json':
+                  schema:
+                    $ref: '#/components/schemas/notification'
+    delete:
+      summary: Delete user notifications
+      responses:
+        200:
+          description: notification of user are deleted
+
+components:
+
+  schemas:
+    newNotification:
+      type: object
+      properties:
+        id_user:
+          type: integer
+        idTrip:
+          type: integer
+        message:
+          type: string
+      example:
+        id_user: 5
+        idTrip: 3
+        message: new passenger wants to join the trip
+    notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        trip_id:
+          type: integer
+        date:
+          type: string
+          description: Date in ISO 8601, YYYY-MM-DD
+        notification_text:
+          type: string
+      example:
+        id: 1
+        user_id: 5
+        trip_id: 3
+        date: 2022-10-24
+        notification_text: new passenger wants to join the trip

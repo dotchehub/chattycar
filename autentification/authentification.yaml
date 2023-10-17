@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: Chatty Car Ride Sharing Service authentication API
+  description: API for the authentication service of Chatty Car, the ride sharing app.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:9004'
+    description: dev server
+
+paths:
+
+  /authentication/connect:
+    post:
+      summary: Connect user and retrieve authentication JWT token
+      requestBody:
+        description: Credentials of the user
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/credentials'
+      responses:
+        400:
+          description: Credentials in request are not correct
+        401:
+          description: Wrong username or password
+        200:
+          description: User authenticated, sent JWT token
+          content:
+            'text/plain':
+              schema:
+                type: string
+                example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhdXRoMCIsInBzZXVkbyI6IkNhdDRMaWZlIn0.LqfooEI-I9VTBo-isjm812ttnIPagMCwdhRkW5ngn0_tlLX86LRoxahgskmgIeWDbm4Mu3y3D8Qbhq_71hNQTA
+
+  /authentication:
+    post:
+      summary: Register the user
+      requestBody:
+        description: Credentials of the user
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/credentials'
+      responses:
+        400:
+          description: Credentials in request are not correct
+        401:
+          description: Wrong username or password
+        200:
+          description:  credential created
+
+
+  /authentication/{email}:
+    parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+          example: mark@gmail.com
+        description: email of the user
+
+    delete:
+      summary: Delete credentials
+      responses:
+        401:
+          description: Missing authentication
+        403:
+          description: Not identified as the corresponding user
+        404:
+          description: No user found with this ID
+        200:
+          description: credentials are deleted
+
+    put:
+      summary: update credentials
+      responses:
+        401:
+          description: Missing authentication
+        403:
+          description: Not identified as the corresponding user
+        404:
+          description: No user found with this ID
+        200:
+          description: credentials are updated
+
+  /authentication/verify:
+    post:
+      summary: Verify is the token of the user is good
+      requestBody:
+        description: the token of the user
+        content:
+          'text/plain':
+            schema:
+              type: string
+              example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhdXRoMCIsInBzZXVkbyI6IkNhdDRMaWZlIn0.LqfooEI-I9VTBo-isjm812ttnIPagMCwdhRkW5ngn0_tlLX86LRoxahgskmgIeWDbm4Mu3y3D8Qbhq_71hNQTA
+
+      responses:
+        400:
+          description: token in request are not correct
+        401:
+          description: cannont get the right email in the token
+        200:
+          description: send user email
+
+
+components:
+
+  schemas:
+    credentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: gregory.seront@vinci.be
+        password: password123

@@ -1,0 +1,57 @@
+openapi: 3.0.3
+info:
+  title: Chatty Car Ride Sharing Service Gps
+  description: API that handles the itinerary of the different trips
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080/'
+    description: dev server
+
+paths:
+  /gps:
+    get:
+      summary: Get the distance between two points
+      description:
+        Get the distance from an origin point to a destination point using
+        longitude and latidude of those points
+      parameters:
+        - name: origin_latitude
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 50.849372
+          description: Latitude of the origin position
+        - name: origin_longitude
+          in: query
+          schema:
+            type: number
+            example: 4.451009
+          description: Longitude of the starting position
+        - name: destination_latitude
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 50.849372
+          description: Latitude of the destination position
+        - name: destination_longitude
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 4.451009
+          description: Longitude of the destination position
+      responses:
+        400:
+          description: Both latitude and longitude should be specified for a position query
+        200:
+          description: Sent a distance
+          content:
+            'text/plain':
+              schema:
+                type: number
+                items:
+                  $ref: '#/components/schemas/gps 
+        
+        

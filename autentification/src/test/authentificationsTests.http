@@ -1,0 +1,35 @@
+### Create credentials
+POST http://localhost:9004/authentication
+Content-Type: application/json
+
+{
+  "email": "dani@gmail.com",
+  "password": "123"
+}
+
+### Update credentials
+PUT http://localhost:9004/authentication/dani@gmail.com
+Content-Type: application/json
+
+{
+  "email": "dani@gmail.com",
+  "password": "1234"
+}
+
+### Delete credentials
+DELETE http://localhost:9004/authentication/Cat4Life
+
+### Connect user
+POST http://localhost:9004/authentication/connect
+Content-Type: application/json
+
+{
+  "email": "dani@gmail.com",
+  "password": "123"
+}
+
+### Verify token
+POST http://localhost:9004/authentication/verify
+Content-Type: application/json
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhdXRoMCIsImVtYWlsIjoiZGFuaUBnbWFpbC5jb20ifQ.VCEz_X5sPoRyLmUTEGlqY5vpZkRAktp_-95eV08QDB5akNg0JDJDy5H4G1aUHZIroEQGhC_SK73HZOhIeoJabw

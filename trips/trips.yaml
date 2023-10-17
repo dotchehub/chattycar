@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: Chatty Car Ride Sharing Service TRIPS
+  description: API for the trips service of Chatty Car, the ride sharing app.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:9001/'
+    description: dev server
+
+paths:
+  /trips:
+    post:
+      summary: Create a trip
+      requestBody:
+        description: Information of the trip
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/newTrip'
+      responses:
+        400:
+          description: lack of information
+        201:
+          description: Trip is created, sent trip created with its assigned ID
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/newTrip'
+    get:
+      summary: Get list of trips with optional search queries
+      description:
+        Limits list to 20 trips, ordered by latest created if not otherwise specified.
+        Always filters out trips without any available seating left.
+        Departure date query will filter only trips departing on the same date.
+        Origin query (lat+lon) will order by distance with specified origin position.
+        Destination query (lat+lon) will order by distance with specified destination position.
+        Both origin and destination queries will order by sum of distances.
+      parameters:
+        - name: departure
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 2022-10-24
+          description: Date of departure
+        - name: origin_latitude
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 50.849372
+          description: Latitude of the origin position
+        - name: origin_longitude
+          in: query
+          schema:
+            type: number
+            example: 4.451009
+          description: Longitude of the starting position
+        - name: destination_latitude
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 50.849372
+          description: Latitude of the destination position
+        - name: destination_longitude
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 4.451009
+          description: Longitude of the destination position
+      responses:
+        200:
+          description: Sent list of trips
+          content:
+            'application/json':
+              schema:
+                type: array
+                maxItems: 20
+                items:
+                  $ref: '#/components/schemas/trip'
+
+  /trips/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 38
+        description: ID of the trip
+    get:
+      summary: Get trip information
+      responses:
+        404:
+          description: No trip found with this ID
+        200:
+          description: Sent trip information
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/trip'
+    delete:
+      summary: Delete trip
+      responses:
+        404:
+          description: No trip found with this ID
+        200:
+          description: Trip is deleted
+
+
+  /trips/users/{id}/driver:
+    get:
+      summary: Get trips where user is the driver with a future departure date
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+          description: ID of the user
+      responses:
+        200:
+          description: Sent user driver trips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/trip"
+    delete:
+      summary: Delete all trips where the user is the driver
+      responses:
+        404:
+          description: No user found with this ID (verification in gateway)
+        200:
+          description: Trips are deleted
+
+  /trips/users/{id}/passenger:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 38
+        description: ID of the passenger
+    get:
+      summary: Get trips where user is one of the passengers by status
+      responses:
+        404:
+          description: User not found
+        200:
+          description: Sent list of trips where the user is a passenger by status
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/trip'
+
+components:
+
+  schemas:
+
+    newTrip:
+      type: object
+      properties:
+        origin:
+          $ref: '#/components/schemas/position'
+        destination:
+          $ref: '#/components/schemas/position'
+        departure:
+          type: string
+          description: Date in ISO 8601, YYYY-MM-DD
+        driver_id:
+          type: integer
+        available_seating:
+          type: integer
+      example:
+        origin:
+          latitude: 50.849372
+          longitude: 4.451009
+        destination:
+          latitude: 50.849372
+          longitude: 4.451009
+        departure: 2022-10-24
+        driver_id: 12
+        available_seating: 2
+
+    position:
+      type: object
+      properties:
+        longitude:
+          type: integer
+        latitude:
+          type: integer
+      example:
+        longitude: 50.25
+        latitude: 150.53
+
+    trip:
+      type: object
+      properties:
+        trip_id:
+          type: integer
+        origin:
+          $ref: '#/components/schemas/position'
+        destination:
+          $ref: '#/components/schemas/position'
+        departure:
+          type: string
+          description: Date in ISO 8601, YYYY-MM-DD
+        driver_id:
+          type: integer
+        available_seating:
+          type: integer
+      example:
+        id: 38
+        origin:
+          latitude: 50.849372
+          longitude: 4.451009
+        destination:
+          latitude: 50.849372
+          longitude: 4.451009
+        departure: 2022-10-24 10:45:00
+        driver_id: 12
+        available_seating: 2

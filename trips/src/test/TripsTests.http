@@ -1,0 +1,17 @@
+### Create product
+POST http://localhost:9001/trips
+Content-Type: application/json
+
+{
+  "idDriver": 15,
+  "date": "2021-05-08",
+  "origin": {
+    "latitude":10,
+    "longitude": 15
+  },
+  "destination": {
+    "latitude": 50,
+    "longitude": 55
+  },
+  "avaibleSpots": 10
+}

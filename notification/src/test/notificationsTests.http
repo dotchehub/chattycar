@@ -1,0 +1,26 @@
+### Create one
+POST http://localhost:9001/notifications/
+Content-Type: application/json
+
+{
+  "idUser": 1,
+  "idTrip": 4,
+  "message": "second Notification"
+}
+
+### Create one
+POST http://localhost:9001/notifications/
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "tripId": 5,
+  "date": "2022-05-05",
+  "notificationText": "second Notification"
+}
+
+### Get One
+GET http://localhost:9001/notifications/user/1
+
+### Delete
+DELETE  http://localhost:9001/notifications/user/1
